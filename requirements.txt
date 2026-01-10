@@ -95,3 +95,4 @@ wheel==0.45.1
 xyzservices==2025.10.0
 yarg==0.1.9
 geopy==2.3.0
+plotly==5.24.1
