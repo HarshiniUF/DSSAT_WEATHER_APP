@@ -165,7 +165,7 @@ def generate_wth_from_open_meteo(latitude, longitude, start_date, end_date):
     # Create DSSAT weather file content
     # Header logic corrected to use geopy site_name and dynamic INSI
     header_lines = [
-        f"$WEATHER DATA : {site_name}",
+        f"$WEATHER DATA : {address}",
         "",
         "@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT",
         f"  {insi:<4} {latitude:8.3f} {longitude:8.3f} {elev:5.0f} {TAV:5.1f} {AMP:5.1f}   2.0  10.0",
