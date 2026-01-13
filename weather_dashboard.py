@@ -433,7 +433,7 @@ def create_rainfall_chart(df, selected_month):
 
 def main():
     st.markdown("<h1 style='text-align: center; color: #1e3a8a;'>🌦️ Interactive Weather Data Explorer</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #64748b;'>Generate DSSAT-compliant weather files and analyze climate patterns</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #64748b;'>This application was developed as part of the Generative AI for Agriculture (GAIA) project, funded by the Gates Foundation and the UK International Development from the UK government, in collaboration with CGIAR and the University of Florida.</p>", unsafe_allow_html=True)
     st.markdown("---")
     
     gen_tab, upload_tab = st.tabs(["📍 Generate New Weather File", "📤 Upload Existing .WTH File"])
