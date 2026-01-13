@@ -441,16 +441,10 @@ def create_rainfall_chart(df, selected_month):
 
 def main():
 
-    # Add this Sidebar section
-    with st.sidebar:
-        st.title("About")
-        st.info("""
-        **Data Source:** [Open-Meteo](https://open-meteo.com/)
-        Historical weather data is provided under the Attribution 4.0 International (CC BY 4.0) license. 
-        It utilizes models like ERA5, GFS, and HRRR.
-        """)
+    
     st.markdown("<h1 style='text-align: center; color: #1e3a8a;'>🌦️ Interactive Weather Data Explorer</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #64748b;'>This application was developed as part of the Generative AI for Agriculture (GAIA) project, funded by the Gates Foundation and the UK International Development from the UK government, in collaboration with CGIAR and the University of Florida.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-size: 0.8rem; color: #94a3b8;'>Data Source: Open-Meteo Historical Weather API (CC BY 4.0)</p>", unsafe_allow_html=True)
     st.markdown("---")
     
     gen_tab, upload_tab = st.tabs(["📍 Generate New Weather File", "📤 Upload Existing .WTH File"])
