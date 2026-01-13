@@ -183,8 +183,16 @@ def generate_wth_from_open_meteo(latitude, longitude, start_date, end_date):
             f"{row['DATE']:7.0f} {row['SRAD']:5.1f} {row['TMAX']:5.1f} {row['TMIN']:5.1f} "
             f"{row['RAIN']:5.1f} {row['DEWP']:5.1f} {row['WIND']:5.1f} {row['PAR']:5.1f}"
         )
+
+    # Add the Data Source Note here
+    footer_note = [
+        "",
+        "! Note: Weather data sourced from Open-Meteo Historical Weather API",
+        "! Data includes reanalysis from ERA5 and other global meteorological models.",
+        f"! Generated on: {date.today()}"
+    ]
     
-    wth_content = "\n".join(header_lines + data_lines)
+    wth_content = "\n".join(header_lines + data_lines + footer_note)
     
     report_lines = ["🔍 QUALITY ASSURANCE REPORT", "=" * 50]
     issues = []
@@ -432,6 +440,15 @@ def create_rainfall_chart(df, selected_month):
 # ==================== MAIN APP ====================
 
 def main():
+
+    # Add this Sidebar section
+    with st.sidebar:
+        st.title("About")
+        st.info("""
+        **Data Source:** [Open-Meteo](https://open-meteo.com/)
+        Historical weather data is provided under the Attribution 4.0 International (CC BY 4.0) license. 
+        It utilizes models like ERA5, GFS, and HRRR.
+        """)
     st.markdown("<h1 style='text-align: center; color: #1e3a8a;'>🌦️ Interactive Weather Data Explorer</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #64748b;'>This application was developed as part of the Generative AI for Agriculture (GAIA) project, funded by the Gates Foundation and the UK International Development from the UK government, in collaboration with CGIAR and the University of Florida.</p>", unsafe_allow_html=True)
     st.markdown("---")
