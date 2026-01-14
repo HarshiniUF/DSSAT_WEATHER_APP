@@ -335,7 +335,8 @@ def create_monthly_boxplot(df, variable, title, color):
         height=400,
         showlegend=False,
         hovermode='closest',
-        yaxis=dict(range=[0, y_limit], dtick=10)
+        # yaxis=dict(range=[0, y_limit], dtick=10)
+        yaxis=dict(range=[df_plot[variable].min() - 5, df_plot[variable].max() + 5])
     )
     
     return fig
@@ -398,7 +399,8 @@ def create_daily_line_chart(df, title):
         yaxis_title="Temperature (°C)",
         height=400,
         hovermode='x unified',
-        yaxis=dict(range=[0, y_limit], dtick=10)
+        # yaxis=dict(range=[0, y_limit], dtick=10)
+        yaxis=dict(range=[df_plot[['TMAX', 'TMIN']].min().min() - 5, y_limit])
     )
     
     return fig
@@ -432,7 +434,8 @@ def create_rainfall_chart(df, selected_month):
         xaxis_title='Date',
         yaxis_title='Rainfall (mm)',
         height=400,
-        yaxis=dict(range=[0, y_limit])
+        # yaxis=dict(range=[0, y_limit])
+        yaxis=dict(range=[0, y_limit]) # 0 because rainfall cannot be negative!
     )
     
     return fig
