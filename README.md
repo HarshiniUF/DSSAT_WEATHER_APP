@@ -71,4 +71,5 @@ The best way to share this app is through **Streamlit Community Cloud**:
 
 ---
 
-*Created for agricultural researchers and climate analysts.*
+
+*Created for agricultural researchers and climate analysts. This application was developed as part of the Generative AI for Agriculture (GAIA) project, funded by the Gates Foundation and the UK International Development from the UK government, in collaboration with CGIAR and the University of Florida.*
