@@ -615,7 +615,7 @@ def display_analysis_dashboard(df, site_name):
     
     with col3:
     # Count how many unique years are in the current view
-    num_years = filtered_df.index.year.nunique()
+        num_years = filtered_df.index.year.nunique()
     
     if selected_year == "All Years" and num_years > 1:
         # Calculate Average Annual Total for the professor
