@@ -613,8 +613,20 @@ def display_analysis_dashboard(df, site_name):
         avg_tmin = valid_tmin.mean() if len(valid_tmin) > 0 else 0
         st.metric("❄️ Avg Min Temp", f"{avg_tmin:.1f}°C")
     with col3:
-        total_rain = valid_rain.sum()
-        st.metric("🌧️ Total Rainfall", f"{total_rain:.1f} mm")
+        with col3:
+        # Count how many unique years are in the current view
+        num_years = filtered_df.index.year.nunique()
+        
+        if selected_year == "All Years" and num_years > 1:
+            # Calculate Average Annual Total for the professor
+            avg_annual_rain = valid_rain.sum() / num_years
+            st.metric("🌧️ Avg Annual Rainfall", f"{avg_annual_rain:.1f} mm/yr")
+            st.caption(f"Calculated as average over {num_years} years")
+        else:
+            # Show total for a single year (which is correct/not misleading)
+            total_rain = valid_rain.sum()
+            st.metric("🌧️ Total Rainfall", f"{total_rain:.1f} mm")
+            st.caption("Total for the selected period")
     with col4:
         st.metric("📅 Days Analyzed", len(filtered_df))
     
