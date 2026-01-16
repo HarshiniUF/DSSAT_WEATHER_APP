@@ -185,6 +185,8 @@ def generate_wth_from_open_meteo(latitude, longitude, start_date, end_date):
         )
 
     # Add the Data Source Note here
+    florida_tz = pytz.timezone('US/Eastern')
+    now_florida = datetime.now(florida_tz)
     american_date = date.today().strftime('%m/%d/%Y')
     footer_note = [
         "",
