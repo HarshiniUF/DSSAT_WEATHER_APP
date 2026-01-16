@@ -502,16 +502,20 @@ def main():
             
             st.markdown("---")
             
+            # Change start_date to allow scrolling back to 1940
             start_date = st.date_input(
                 "Start Date",
                 value=date.today() - timedelta(days=366),
-                max_value=date.today() - timedelta(days=1)
+                min_value=date(1940, 1, 1), # ADD THIS: Open-Meteo starts here
+                max_value=date.today() - timedelta(days=5) # Buffer for processing
             )
             
+            # Change end_date to allow scrolling back as well
             end_date = st.date_input(
                 "End Date",
-                value=date.today() - timedelta(days=1),
-                max_value=date.today() - timedelta(days=1)
+                value=date.today() - timedelta(days=5),
+                min_value=date(1940, 1, 1), # ADD THIS
+                max_value=date.today() - timedelta(days=5)
             )
             
             st.markdown("---")
@@ -572,7 +576,7 @@ def main():
                 st.error("❌ Failed to parse the weather file.")
 
 def display_analysis_dashboard(df, site_name):
-    """Display the interactive analysis dashboard"""
+    """Display the interactive analysis dashboard with strict historical averaging"""
     st.markdown("---")
     st.markdown(f"<h2 style='text-align: center;'>📊 Analysis Dashboard: {site_name}</h2>", unsafe_allow_html=True)
     st.markdown("---")
@@ -601,46 +605,63 @@ def display_analysis_dashboard(df, site_name):
         return
     
     st.markdown("### 📊 Summary Statistics")
-    col1, col2, col3, col4 = st.columns(4)
+    m1, m2, m3, m4 = st.columns(4)
+    
     valid_tmax = filtered_df[filtered_df['TMAX'] != -99.0]['TMAX']
     valid_tmin = filtered_df[filtered_df['TMIN'] != -99.0]['TMIN']
     valid_rain = filtered_df[filtered_df['RAIN'] != -99.0]['RAIN']
     
-    with col1:
+    with m1:
         avg_tmax = valid_tmax.mean() if len(valid_tmax) > 0 else 0
         st.metric("🌡️ Avg Max Temp", f"{avg_tmax:.1f}°C")
-    with col2:
+        st.caption("Average daily high")
+
+    with m2:
         avg_tmin = valid_tmin.mean() if len(valid_tmin) > 0 else 0
         st.metric("❄️ Avg Min Temp", f"{avg_tmin:.1f}°C")
-    
-    with col3:
-    # Count how many unique years are in the current view
-        num_years = filtered_df.index.year.nunique()
-    
-    if selected_year == "All Years" and num_years > 1:
-        # Calculate Average Annual Total for the professor
-        avg_annual_rain = valid_rain.sum() / num_years
-        st.metric("🌧️ Avg Annual Rainfall", f"{avg_annual_rain:.1f} mm/yr")
-        st.caption(f"Calculated as average over {num_years} years")
-    else:
-        # Show total for a single year (which is correct/not misleading)
-        total_rain = valid_rain.sum()
-        st.metric("🌧️ Total Rainfall", f"{total_rain:.1f} mm")
-        st.caption("Total for the selected period")
-    with col4:
+        st.caption("Average daily low")
+
+    with m3:
+        # Strict Logic: Count unique months per year to find ONLY full years
+        year_month_counts = filtered_df.groupby(filtered_df.index.year).apply(lambda x: x.index.month.nunique())
+        full_years = year_month_counts[year_month_counts == 12].index.tolist()
+        num_full_years = len(full_years)
+        total_unique_years = filtered_df.index.year.nunique()
+
+        if total_unique_years > 1:
+            if num_full_years >= 1:
+                # Calculate average using ONLY full 12-month years
+                full_year_data = filtered_df[filtered_df.index.year.isin(full_years)]
+                avg_val = full_year_data['RAIN'].sum() / num_full_years
+                st.metric("🌧️ Avg Annual Rainfall", f"{avg_val:.1f} mm/yr")
+                st.caption(f"Average of {num_full_years} full years")
+            else:
+                # Multiple years selected, but none are a full 12 months
+                total_rain = valid_rain.sum()
+                st.metric("🌧️ Total Rainfall", f"{total_rain:.1f} mm")
+                st.caption("Total for partial years")
+        else:
+            # Single year or less selected
+            total_rain = valid_rain.sum()
+            st.metric("🌧️ Total Rainfall", f"{total_rain:.1f} mm")
+            st.caption("Total for selected period")
+
+    with m4:
         st.metric("📅 Days Analyzed", len(filtered_df))
+        st.caption("Total days in view")
     
     st.markdown("---")
     
+    # Graphs section
     if chart_type == "Temperature Analysis":
         if selected_month == "All Months":
-            st.markdown("### 🌡️ Monthly Temperature Distribution (Outliers highlighted)")
+            st.markdown("### 🌡️ Monthly Temperature Distribution")
             fig_tmax = create_monthly_boxplot(filtered_df, 'TMAX', 'Maximum Temperature (TMAX)', '#FF6347')
             st.plotly_chart(fig_tmax, use_container_width=True)
             fig_tmin = create_monthly_boxplot(filtered_df, 'TMIN', 'Minimum Temperature (TMIN)', '#4682B4')
             st.plotly_chart(fig_tmin, use_container_width=True)
         else:
-            st.markdown("### 📈 Daily Temperature Trend (Red markers = Outliers)")
+            st.markdown("### 📈 Daily Temperature Trend")
             fig = create_daily_line_chart(filtered_df, 'Daily Maximum and Minimum Temperature')
             st.plotly_chart(fig, use_container_width=True)
     else:
