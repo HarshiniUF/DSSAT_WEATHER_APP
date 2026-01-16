@@ -162,11 +162,19 @@ def generate_wth_from_open_meteo(latitude, longitude, start_date, end_date):
     for col in ['SRAD', 'TMAX', 'TMIN', 'RAIN', 'DEWP', 'WIND', 'PAR']:
         if col in df.columns:
             df[col] = df[col].round(1)
+
+    # Data Source Note here
+    florida_tz = pytz.timezone('US/Eastern')
+    now_florida = datetime.now(florida_tz)
+    american_date = date.today().strftime('%m/%d/%Y')
     
     # Create DSSAT weather file content
     # Header logic corrected to use geopy site_name and dynamic INSI
     header_lines = [
         f"$WEATHER DATA : {site_name}",
+        f"! Note: Weather data sourced from Open-Meteo Historical Weather API",
+        f"! Data includes reanalysis from ERA5 and other global meteorological models.",
+        f"! Generated on: {american_date}",
         "",
         "@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT",
         f"  {insi:<4} {latitude:8.3f} {longitude:8.3f} {elev:5.0f} {TAV:5.1f} {AMP:5.1f}   2.0  10.0",
@@ -184,19 +192,8 @@ def generate_wth_from_open_meteo(latitude, longitude, start_date, end_date):
             f"{row['DATE']:7.0f} {row['SRAD']:5.1f} {row['TMAX']:5.1f} {row['TMIN']:5.1f} "
             f"{row['RAIN']:5.1f} {row['DEWP']:5.1f} {row['WIND']:5.1f} {row['PAR']:5.1f}"
         )
-
-    # Add the Data Source Note here
-    florida_tz = pytz.timezone('US/Eastern')
-    now_florida = datetime.now(florida_tz)
-    american_date = date.today().strftime('%m/%d/%Y')
-    footer_note = [
-        "",
-        "! Note: Weather data sourced from Open-Meteo Historical Weather API",
-        "! Data includes reanalysis from ERA5 and other global meteorological models.",
-        f"! Generated on: {american_date}"
-    ]
     
-    wth_content = "\n".join(header_lines + data_lines + footer_note)
+    wth_content = "\n".join(header_lines + data_lines)
     
     report_lines = ["🔍 QUALITY ASSURANCE REPORT", "=" * 50]
     issues = []
@@ -651,8 +648,16 @@ def display_analysis_dashboard(df, site_name):
             st.caption("Total for selected period")
 
     with m4:
-        st.metric("📅 Days Analyzed", len(filtered_df))
-        st.caption("Total days in view")
+        # Get the first and last date from the current filtered data
+        if not filtered_df.empty:
+            actual_start = filtered_df.index.min().strftime('%m/%d/%Y')
+            actual_end = filtered_df.index.max().strftime('%m/%d/%Y')
+            
+            st.metric("📅 Days Analyzed", len(filtered_df))
+            st.caption(f"Period: {actual_start} to {actual_end}")
+        else:
+            st.metric("📅 Days Analyzed", 0)
+            st.caption("No data in range")
     
     st.markdown("---")
     
