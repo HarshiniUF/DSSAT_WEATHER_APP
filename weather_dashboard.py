@@ -185,11 +185,12 @@ def generate_wth_from_open_meteo(latitude, longitude, start_date, end_date):
         )
 
     # Add the Data Source Note here
+    american_date = date.today().strftime('%m/%d/%Y')
     footer_note = [
         "",
         "! Note: Weather data sourced from Open-Meteo Historical Weather API",
         "! Data includes reanalysis from ERA5 and other global meteorological models.",
-        f"! Generated on: {date.today()}"
+        f"! Generated on: {{american_date}}"
     ]
     
     wth_content = "\n".join(header_lines + data_lines + footer_note)
