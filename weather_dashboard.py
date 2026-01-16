@@ -348,13 +348,17 @@ def create_daily_line_chart(df, title):
     
     fig = go.Figure()
     
-    # Outlier Detection Logic (IQR Method)
+    # IMPROVED Outlier Detection Logic
     def get_outlier_mask(series):
-        if len(series) < 4: return pd.Series([False]*len(series))
+        # If we have 3 or fewer days, it's impossible to have a statistical outlier
+        if len(series) < 4: 
+            return [False] * len(series) 
+            
         q1 = series.quantile(0.25)
         q3 = series.quantile(0.75)
         iqr = q3 - q1
-        return (series < (q1 - 1.5 * iqr)) | (series > (q3 + 1.5 * iqr))
+        mask = (series < (q1 - 1.5 * iqr)) | (series > (q3 + 1.5 * iqr))
+        return mask.values # Ensure we return the values to avoid indexing issues
 
     # TMAX Line
     fig.add_trace(go.Scatter(
